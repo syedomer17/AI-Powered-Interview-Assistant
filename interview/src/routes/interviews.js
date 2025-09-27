@@ -73,20 +73,22 @@ router.get("/:id/current-question", async (req, res) => {
     );
 
     if (!currentQuestion) {
-      return res.json({ 
-        completed: true, 
+      return res.json({
+        completed: true,
         message: "Interview completed",
         totalQuestions: interview.questions.length,
-        answeredQuestions: interview.questions.filter(q => q.answer || q.timedOut).length
+        answeredQuestions: interview.questions.filter(
+          (q) => q.answer || q.timedOut
+        ).length,
       });
     }
 
     const questionIndex = interview.questions.indexOf(currentQuestion);
     res.json({
       question: currentQuestion,
-      questionIndex: questionIndex + 1,
+      questionIndex, // ✅ zero-based index (no +1 anymore)
       totalQuestions: interview.questions.length,
-      completed: false
+      completed: false,
     });
   } catch (e) {
     console.error(e);
@@ -112,6 +114,8 @@ router.post("/:id/answer", async (req, res) => {
     if (question.answer) {
       return res.status(400).json({ error: "Question already answered" });
     }
+
+    //  console.log("Scoring answer:", { q: question.text, answer });
 
     // Score the answer using AI
     const scoreResult = await scoreAnswer(

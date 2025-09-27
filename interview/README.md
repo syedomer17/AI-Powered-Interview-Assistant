@@ -4,7 +4,7 @@ This is the Node.js backend for the AI-Powered Interview Assistant application.
 
 ## Features
 
-- ✅ **Resume Upload & Parsing**: Supports DOCX and TXT files with automatic field extraction
+- ✅ **Resume Upload & Parsing**: Supports PDF and DOCX files with automatic field extraction
 - ✅ **AI-Powered Questions**: 6 questions (2 Easy, 2 Medium, 2 Hard) with fallback support
 - ✅ **Interview Management**: Complete interview lifecycle with scoring
 - ✅ **Data Persistence**: MongoDB integration with session management
@@ -100,7 +100,7 @@ interview/
 
 ## Features Status
 
-- ✅ Resume Upload (DOCX/TXT support, PDF coming soon)
+- ✅ Resume Upload (PDF and DOCX support)
 - ✅ Field Extraction (Name, Email, Phone)  
 - ✅ AI Question Generation (with fallback)
 - ✅ Interview Chat Flow
@@ -114,7 +114,7 @@ interview/
 The backend has been tested and all core functionality is working:
 
 1. **Database Connection**: ✅ MongoDB connected
-2. **Resume Parsing**: ✅ DOCX and TXT files supported  
+2. **Resume Parsing**: ✅ PDF and DOCX files supported  
 3. **AI Service**: ✅ Question generation with fallbacks
 4. **API Endpoints**: ✅ All CRUD operations working
 5. **Interview Flow**: ✅ Complete chat-based interview

@@ -1,4 +1,4 @@
-import pdfParse from "pdf-parse";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.js";
 import mammoth from "mammoth";
 import fs from "fs/promises";
 import path from "path";
@@ -55,9 +55,27 @@ export async function extractResumeData(filePath) {
     let raw = "";
 
     if (ext === ".pdf") {
-      // PDF parsing is temporarily disabled due to library issues
-      // Users should upload DOCX or TXT files instead
-      raw = "PDF parsing is currently unavailable. Please upload your resume as a DOCX or TXT file for best results.";
+      try {
+        const fileBuffer = await fs.readFile(filePath);
+        const loadingTask = pdfjs.getDocument({
+          data: fileBuffer,
+          useSystemFonts: true
+        });
+        const pdf = await loadingTask.promise;
+        
+        let text = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(' ');
+          text += pageText + ' ';
+        }
+        raw = text;
+      } catch (pdfError) {
+        console.warn("PDF parsing failed:", pdfError.message);
+        // Provide a more user-friendly error message
+        raw = `Failed to extract text from PDF. The file may be corrupted, password-protected, or image-based. Please try uploading a DOCX file instead.`;
+      }
     } else if (ext === ".docx") {
       const { value } = await mammoth.extractRawText({ path: filePath });
       raw = value;

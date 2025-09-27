@@ -67,7 +67,7 @@
               "key": "file",
               "type": "file",
               "src": [],
-              "description": "Upload a .docx or .txt resume file"
+              "description": "Upload a .pdf or .docx resume file"
             }
           ]
         },

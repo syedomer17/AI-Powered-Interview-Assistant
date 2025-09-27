@@ -42,10 +42,10 @@ router.post("/:id/resume", upload.single("file"), async (req, res) => {
     if (!candidate)
       return res.status(404).json({ error: "Candidate not found" });
 
-    const allowedTypes = ['.docx', '.txt'];
+    const allowedTypes = ['.pdf', '.docx'];
     const fileExt = path.extname(req.file.originalname).toLowerCase();
     if (!allowedTypes.includes(fileExt)) {
-      return res.status(400).json({ error: "Invalid file type. Currently only DOCX and TXT files are supported. PDF support will be added soon." });
+      return res.status(400).json({ error: "Invalid file type. Only PDF and DOCX files are supported." });
     }
 
     const { rawText, extracted } = await extractResumeData(req.file.path);
