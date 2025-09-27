@@ -1,3 +1,4 @@
+import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import fs from "fs/promises";
 import path from "path";
