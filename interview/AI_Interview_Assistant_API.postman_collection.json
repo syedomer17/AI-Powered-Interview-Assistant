@@ -1,0 +1,366 @@
+{
+  "info": {
+    "_postman_id": "interview-assistant-api",
+    "name": "AI Interview Assistant API",
+    "description": "Complete API collection for testing the AI-Powered Interview Assistant",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the server is running"
+      }
+    },
+    {
+      "name": "2. Create Candidate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set('candidateId', response._id);",
+              "    console.log('Candidate ID saved:', response._id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"resumeText\": \"John Doe is a Full Stack Developer with 5 years of experience in React, Node.js, and JavaScript. He has worked on multiple web applications and has strong problem-solving skills.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/candidates",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "candidates"]
+        },
+        "description": "Create a new candidate"
+      }
+    },
+    {
+      "name": "3. Upload Resume File",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": [],
+              "description": "Upload a .docx or .txt resume file"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/candidates/{{candidateId}}/resume",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "candidates", "{{candidateId}}", "resume"]
+        },
+        "description": "Upload resume file for the candidate"
+      }
+    },
+    {
+      "name": "4. Get All Candidates",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/candidates",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "candidates"]
+        },
+        "description": "Get list of all candidates"
+      }
+    },
+    {
+      "name": "5. Get Specific Candidate",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/candidates/{{candidateId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "candidates", "{{candidateId}}"]
+        },
+        "description": "Get details of a specific candidate"
+      }
+    },
+    {
+      "name": "6. Update Candidate Info",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Smith\",\n  \"phone\": \"+1987654321\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/candidates/{{candidateId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "candidates", "{{candidateId}}"]
+        },
+        "description": "Update candidate information"
+      }
+    },
+    {
+      "name": "7. Start Interview",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set('interviewId', response._id);",
+              "    console.log('Interview ID saved:', response._id);",
+              "    console.log('Questions generated:', response.questions.length);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"candidateId\": \"{{candidateId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews"]
+        },
+        "description": "Start a new interview for the candidate"
+      }
+    },
+    {
+      "name": "8. Get Current Question",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/current-question",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "current-question"]
+        },
+        "description": "Get the current question for the interview"
+      }
+    },
+    {
+      "name": "9. Submit Answer (Q1)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionIndex\": 0,\n  \"answer\": \"let and const are block-scoped while var is function-scoped. const cannot be reassigned after declaration, but let can be. var has function scope and can be hoisted.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/answer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "answer"]
+        },
+        "description": "Submit answer for question 1 (index 0)"
+      }
+    },
+    {
+      "name": "10. Submit Answer (Q2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionIndex\": 1,\n  \"answer\": \"React components are reusable pieces of UI that can be either functional or class-based. They have lifecycle methods like componentDidMount for class components, or useEffect for functional components.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/answer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "answer"]
+        },
+        "description": "Submit answer for question 2 (index 1)"
+      }
+    },
+    {
+      "name": "11. Submit Answer (Q3)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionIndex\": 2,\n  \"answer\": \"I would use JWT tokens for authentication. Create login/logout endpoints on the backend, store tokens securely in httpOnly cookies or localStorage, and protect routes on both frontend and backend using middleware.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/answer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "answer"]
+        },
+        "description": "Submit answer for question 3 (index 2)"
+      }
+    },
+    {
+      "name": "12. Skip Question (Q4)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionIndex\": 3\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/skip",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "skip"]
+        },
+        "description": "Skip question 4 (index 3)"
+      }
+    },
+    {
+      "name": "13. Submit Answer (Q5)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionIndex\": 4,\n  \"answer\": \"For a scalable system handling millions of requests, I would use load balancers, implement microservices architecture, add caching layers like Redis, use database sharding, implement CDNs for static content, and use horizontal scaling with containerization.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/answer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "answer"]
+        },
+        "description": "Submit answer for question 5 (index 4)"
+      }
+    },
+    {
+      "name": "14. Submit Answer (Q6)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"questionIndex\": 5,\n  \"answer\": \"To optimize a slow React app, I would use React.memo for preventing unnecessary re-renders, useMemo and useCallback for expensive calculations, implement code splitting with React.lazy, optimize bundle size, implement virtual scrolling for large lists, and use React DevTools Profiler to identify bottlenecks.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/answer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "answer"]
+        },
+        "description": "Submit answer for question 6 (index 5)"
+      }
+    },
+    {
+      "name": "15. Get Interview Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}"]
+        },
+        "description": "Get complete interview details with all questions and scores"
+      }
+    },
+    {
+      "name": "16. Finalize Interview",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews/{{interviewId}}/finalize",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews", "{{interviewId}}", "finalize"]
+        },
+        "description": "Finalize the interview and generate summary"
+      }
+    },
+    {
+      "name": "17. Get All Interviews",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interviews",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "interviews"]
+        },
+        "description": "Get list of all interviews"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "candidateId",
+      "value": ""
+    },
+    {
+      "key": "interviewId",
+      "value": ""
+    }
+  ]
+}
