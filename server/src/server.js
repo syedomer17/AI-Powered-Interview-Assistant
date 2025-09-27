@@ -3,6 +3,7 @@ import multer from "multer";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
+import env from "./config/env.js";
 
 import parseResume from "./lib/resume.js";
 
@@ -45,7 +46,7 @@ app.use((err, _req, res, _next) => {
 });
 
 // Start server
-const port = process.env.PORT || 8080;
+const port = env.PORT || 8080;
 app.listen(port, () =>
   console.log(`🚀 Backend listening on http://localhost:${port}`)
 );
