@@ -1,73 +1,53 @@
-import { connectDB } from "./config/db.js";
-import { createApp } from "./app.js";
-import { env } from "./config/env.js";
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 
-import net from 'net';
+import { env } from "./config/env.js";       // { PORT, ALLOWED_ORIGINS, ... }
+import { connectDB } from "./config/db.js";  // your Mongo connect
+import candidatesRoute from "./routes/candidates.js";
+import interviewsRoute from "./routes/interviews.js";
 
-function findAvailablePort(startPort) {
-  return new Promise((resolve) => {
-    const server = net.createServer();
-    
-    server.listen(startPort, '0.0.0.0', () => {
-      const port = server.address().port;
-      server.close(() => resolve(port));
-    });
-    
-    server.on('error', () => {
-      // Port is in use, try next one
-      resolve(findAvailablePort(startPort + 1));
-    });
-  });
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-async function start() {
-  try {
-    await connectDB();
-    const app = createApp();
-    
-    // Find available port starting from env.PORT
-    const availablePort = await findAvailablePort(parseInt(env.PORT));
-    
-    if (availablePort !== parseInt(env.PORT)) {
-      console.log(`⚠️  Port ${env.PORT} is in use, using port ${availablePort} instead`);
-    }
-    
-    const server = app.listen(availablePort, '0.0.0.0', () => {
-      console.log(`🚀 Server running on http://localhost:${availablePort}`);
-      console.log(`🌐 Server accessible at http://0.0.0.0:${availablePort}`);
-    });
 
-    // Handle server listen errors
-    server.on('error', (error) => {
-      if (error.code === 'EADDRINUSE') {
-        console.error(`❌ Port ${availablePort} is already in use`);
-        console.log('💡 Try killing existing processes or use a different port');
-        process.exit(1);
-      } else {
-        console.error('❌ Server error:', error);
-        process.exit(1);
-      }
-    });
+connectDB();
+const PORT = env.PORT || 8080;
 
-    // Graceful shutdown handlers
-    const shutdown = (signal) => {
-      console.log(`${signal} received, shutting down gracefully...`);
-      server.close(() => {
-        console.log('Server closed.');
-        process.exit(0);
-      });
-    };
+const app = express();
 
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
+app.use(express.static(path.join(__dirname, "dist")));
 
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-}
+app.use(express.json());
 
-start().catch((e) => {
-  console.error("Startup error", e);
-  process.exit(1);
+// 3) CORS (simple allowlist via env)
+    const allowed =
+      env.ALLOWED_ORIGINS?.split(",").map(s => s.trim()).filter(Boolean) || ["*"];
+    app.use(
+      cors({
+        origin: (origin, cb) => {
+          if (!origin || allowed.includes("*") || allowed.includes(origin)) return cb(null, true);
+          return cb(new Error("Not allowed by CORS"));
+        },
+      })
+    );
+
+app.use(express.json({ limit: "1mb" }));
+app.use(morgan("dev"));
+
+app.use("/uploads", express.static("uploads"));
+app.get("/health", (_req, res) => res.json({ ok: true }));
+
+// 4) API routes
+app.use("/api/candidates", candidatesRoute);
+app.use("/api/interviews", interviewsRoute);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
 });
