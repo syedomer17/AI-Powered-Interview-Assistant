@@ -32,6 +32,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Upload and process resume
 router.post("/:id/resume", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
@@ -39,17 +40,22 @@ router.post("/:id/resume", upload.single("file"), async (req, res) => {
     }
 
     const candidate = await Candidate.findById(req.params.id);
-    if (!candidate)
+    if (!candidate) {
       return res.status(404).json({ error: "Candidate not found" });
-
-    const allowedTypes = ['.pdf', '.docx'];
-    const fileExt = path.extname(req.file.originalname).toLowerCase();
-    if (!allowedTypes.includes(fileExt)) {
-      return res.status(400).json({ error: "Invalid file type. Only PDF and DOCX files are supported." });
     }
 
+    const allowedTypes = [".pdf", ".docx"];
+    const fileExt = path.extname(req.file.originalname).toLowerCase();
+    if (!allowedTypes.includes(fileExt)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid file type. Only PDF and DOCX supported." });
+    }
+
+    // ✅ Extract clean text and metadata (no binary gibberish)
     const { rawText, extracted } = await extractResumeData(req.file.path);
-    candidate.resumeText = rawText;
+
+    candidate.resumeText = rawText;          // plain text
     candidate.resumeFileName = req.file.originalname;
 
     ["name", "email", "phone"].forEach((f) => {
@@ -59,16 +65,17 @@ router.post("/:id/resume", upload.single("file"), async (req, res) => {
     candidate.missingFields = ["name", "email", "phone"].filter(
       (f) => !candidate[f]
     );
+
     await candidate.save();
 
-    // Clean up uploaded file
-    try {
-      fs.unlinkSync(req.file.path);
-    } catch (cleanupError) {
-      console.warn("Failed to cleanup uploaded file:", cleanupError);
-    }
+    // Cleanup temp file
+    fs.unlink(req.file.path, () => {});
 
-    res.json({ candidate, extracted, missingFields: candidate.missingFields });
+    res.json({
+      candidate,
+      extracted,
+      missingFields: candidate.missingFields,
+    });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Failed to process resume" });
