@@ -23,16 +23,11 @@ app.use(express.static(path.join(__dirname, "dist")));
 app.use(express.json());
 
 // 3) CORS (simple allowlist via env)
-    const allowed =
-      env.ALLOWED_ORIGINS?.split(",").map(s => s.trim()).filter(Boolean) || ["*"];
     app.use(
-      cors({
-        origin: (origin, cb) => {
-          if (!origin || allowed.includes("*") || allowed.includes(origin)) return cb(null, true);
-          return cb(new Error("Not allowed by CORS"));
-        },
-      })
-    );
+  cors({
+    origin: [env.ALLOWED_ORIGINS,env.IP_ORIGINS,env.LOCAL_ORIGIN],
+  })
+);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
