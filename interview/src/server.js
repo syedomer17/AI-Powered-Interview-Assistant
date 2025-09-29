@@ -3,15 +3,16 @@ import cors from "cors";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import dotenv from "dotenv";
 import { env } from "./config/env.js";       // { PORT, ALLOWED_ORIGINS, ... }
 import { connectDB } from "./config/db.js";  // your Mongo connect
 import candidatesRoute from "./routes/candidates.js";
 import interviewsRoute from "./routes/interviews.js";
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+//  dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 connectDB();
 const PORT = env.PORT || 8080;
