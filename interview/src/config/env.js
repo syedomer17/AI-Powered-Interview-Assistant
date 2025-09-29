@@ -8,7 +8,8 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().min(10, "GEMINI_API_KEY missing or too short"),
   ALLOWED_ORIGINS: z.string().optional(),
   IP_ORIGINS: z.string().optional(),
-  LOCAL_ORIGIN: z.string().optional()
+  LOCAL_ORIGIN: z.string().optional(),
+  SERVER_ORIGIN: z.string().optional()
 });
 
 const _env = envSchema.safeParse(process.env);

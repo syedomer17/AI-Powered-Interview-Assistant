@@ -25,7 +25,7 @@ app.use(express.json());
 // 3) CORS (simple allowlist via env)
     app.use(
   cors({
-    origin: [env.ALLOWED_ORIGINS,env.IP_ORIGINS,env.LOCAL_ORIGIN],
+    origin: [env.ALLOWED_ORIGINS,env.IP_ORIGINS,env.LOCAL_ORIGIN,env.SERVER_ORIGIN],
   })
 );
 
