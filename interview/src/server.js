@@ -12,14 +12,14 @@ import interviewsRoute from "./routes/interviews.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-//  dotenv.config({ path: path.resolve(__dirname, "../.env") });
+ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 connectDB();
 const PORT = env.PORT || 8080;
 
 const app = express();
 
-// app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.use(express.json());
 
@@ -40,9 +40,9 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 app.use("/api/candidates", candidatesRoute);
 app.use("/api/interviews", interviewsRoute);
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "dist", "index.html"));
-// });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server listening on port ${PORT}`);
