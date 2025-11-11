@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
  dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 connectDB();
-const PORT = env.PORT || 8080;
+const PORT = env.PORT || 8090;
 
 const app = express();
 
@@ -26,7 +26,7 @@ app.use(express.json());
 // 3) CORS (simple allowlist via env)
     app.use(
   cors({
-    origin: [env.ALLOWED_ORIGINS,env.IP_ORIGINS,env.LOCAL_ORIGIN,env.SERVER_ORIGIN],
+    origin: [env.ALLOWED_ORIGINS,env.IP_ORIGINS,env.LOCAL_ORIGIN,env.SERVER_ORIGIN] || "*",
   })
 );
 

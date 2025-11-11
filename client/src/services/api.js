@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://localhost:8080/api';
+export const API_BASE_URL = 'http://localhost:8090/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,7 +8,7 @@ const api = axios.create({
 
 // Health check API
 export const healthAPI = {
-  check: () => axios.get('http://localhost:8080/health'),
+  check: () => axios.get('http://localhost:8090/health'),
 };
 
 // Candidate API
